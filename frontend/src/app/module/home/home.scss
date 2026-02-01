@@ -1,0 +1,10 @@
+.title {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.table {
+  &__empty td {
+    text-align: center;
+  }
+}

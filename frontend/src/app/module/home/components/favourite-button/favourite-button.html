@@ -1,0 +1,7 @@
+<p-button [disabled]="isDisabled()" [rounded]="true" [text]="true" severity="danger" (onClick)="handleFavouriteClick()">
+  @if (!isChecked()) {
+    <i class="pi pi-heart"></i>
+  } @else {
+    <i class="pi pi-heart-fill"></i>
+  }
+</p-button>

@@ -1,0 +1,38 @@
+name: productApp
+
+services:  
+  postgres:
+    image: postgres:16-alpine
+    container_name: db-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nicepassword
+      POSTGRES_DB: Database
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - product_app
+  
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: db-pgadmin
+    restart: unless-stopped
+    ports:
+      - 8888:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: nicepassword
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+  
+
+networks:
+  product_app:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:

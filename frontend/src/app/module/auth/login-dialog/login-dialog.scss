@@ -1,0 +1,32 @@
+.form {
+  &__description {
+    font-size: 1rem;
+    color: var(--p-text-muted-color);
+    margin: 0 0 24px 0;
+
+
+    & > span > i {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+
+    &--errors {
+      padding: 0 4px;
+      color: var(--p-inputtext-invalid-border-color);
+      font-size: 0.75rem;
+      font-weight: bolder;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+  }
+}
