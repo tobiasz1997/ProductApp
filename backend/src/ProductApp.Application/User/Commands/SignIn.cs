@@ -2,4 +2,4 @@
 
 namespace ProductApp.Application.User.Commands;
 
-public record SignInOrCreate(string Login, string Password) : ICommand;
+public record SignIn(string Login, string Password) : ICommand;

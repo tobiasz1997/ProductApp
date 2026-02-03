@@ -2,4 +2,4 @@
 
 namespace ProductApp.Application.Favourites.Commands;
 
-public record AddFavourite(Guid UserId, string ProductId) : ICommand;
+public record DeleteFavouriteProduct(Guid UserId, string ProductId) : ICommand;

@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApp.Application.Common.Abstraction;
-using ProductApp.Core.Favourites.Repositories;
+using ProductApp.Core.Common.Repositories;
+using ProductApp.Core.ProductFavourites.Repositories;
 using ProductApp.Core.Users.Repositories;
 using ProductApp.Infrastructure.DAL.Decorators;
 using ProductApp.Infrastructure.DAL.Repositories;
@@ -19,8 +20,10 @@ internal static class Extensions
         var postgresOptions = configuration.GetOptions<PostgresOptions>(SectionName);
 
         service.AddDbContext<DatabaseContext>(x => x.UseNpgsql(postgresOptions.ConnectionString));
-        service.AddScoped<IProductFavouriteRepository, ProductFavouriteRepository>();
         service.AddScoped<IUserRepository, UserRepository>();
+        service.AddScoped<IProductRepository, ProductRepository>();
+        service.AddScoped<IProductFavouriteRepository, ProductFavouriteRepository>();
+        service.AddScoped<IUserFavouriteProductsRepository, UserFavouriteProductsRepository>();
         service.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         service.AddScoped<IUnitOfWork, DatabaseUnitOfWork>();
         service.TryDecorate(typeof(ICommandHandler<>), typeof(UnitOfWorkCommandHandlerDecorator<>));

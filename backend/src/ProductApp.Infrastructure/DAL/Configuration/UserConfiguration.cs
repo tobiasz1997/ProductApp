@@ -17,8 +17,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Login)
             .HasConversion(x => x.Value, x => new Login(x))
             .IsRequired();
-        builder.Property(x => x.Password)
-            .HasConversion(x => x.Value, x => new Password(x))
+        builder.Property(x => x.PasswordHash)
+            .HasConversion(x => x.Value, x => new PasswordHash(x))
             .IsRequired();
     }
 }

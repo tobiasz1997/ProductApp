@@ -6,19 +6,17 @@ using ProductApp.Core.Users.Repositories;
 
 namespace ProductApp.Application.User.Commands.Handlers;
 
-internal sealed class SignInOrCreateHandler : ICommandHandler<SignInOrCreate>
+internal sealed class SignInHandler : ICommandHandler<SignIn>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
-    private readonly IClock _clock;
     private readonly IPasswordService _passwordService;
     private readonly IAccessTokenStorage _tokenStorage;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    public SignInOrCreateHandler(
+    public SignInHandler(
         IUserRepository userRepository,
-        IClock clock,
         IPasswordService passwordService, 
         IAccessTokenStorage tokenStorage, 
         IRefreshTokenService refreshTokenService, 
@@ -26,7 +24,6 @@ internal sealed class SignInOrCreateHandler : ICommandHandler<SignInOrCreate>
         IJwtService jwtService)
     {
         _userRepository = userRepository;
-        _clock = clock;
         _passwordService = passwordService;
         _tokenStorage = tokenStorage;
         _refreshTokenService = refreshTokenService;
@@ -34,37 +31,20 @@ internal sealed class SignInOrCreateHandler : ICommandHandler<SignInOrCreate>
         _jwtService = jwtService;
     }
 
-    public async Task HandleAsync(SignInOrCreate command)
+    public async Task HandleAsync(SignIn command)
     {
         var user = await _userRepository.GetByLoginAsync(command.Login);
         if (user is null)
         {
-            await CreateUser(command);
+            throw new InvalidCredentialsException();
         }
-        else
+   
+        if (!_passwordService.Validate(command.Password, user.PasswordHash))
         {
-            if (!_passwordService.Validate(command.Password, user.Password))
-            {
-                throw new InvalidCredentialsException();
-            }
-
-            await RefreshOrCreateUserToken(user);
+            throw new InvalidCredentialsException();
         }
-    }
 
-    private async Task CreateUser(SignInOrCreate command)
-    {
-        var securedPassword = _passwordService.Secure(command.Password);
-        var user = new Core.Users.Models.User(Guid.NewGuid(), command.Login, securedPassword, _clock.Current());
-
-        await _userRepository.AddAsync(user);
-        
-        var accessToken = _jwtService.CreateToken(user.Id, user.Login);
-        var refreshToken = _refreshTokenService.Create(user.Id);
-
-        await _refreshTokenRepository.Insert(refreshToken);
-        
-        _tokenStorage.Set(new AuthResultDto() { AccessToken = accessToken, RefreshToken = refreshToken.Token});
+        await RefreshOrCreateUserToken(user);
     }
 
     private async Task RefreshOrCreateUserToken(Core.Users.Models.User user)

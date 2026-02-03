@@ -17,6 +17,10 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(x => x.UserId)
             .HasConversion(x => x.Value, x => new Id(x))
             .IsRequired();
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(x => x.Token).IsUnique();
         builder.Property(x => x.Token)
             .HasConversion(x => x.Value, x => new Token(x))
