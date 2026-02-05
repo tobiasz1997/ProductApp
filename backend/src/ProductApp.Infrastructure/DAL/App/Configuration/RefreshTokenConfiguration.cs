@@ -4,7 +4,7 @@ using ProductApp.Core.Common.ValueObjects;
 using ProductApp.Core.Users.Models;
 using ProductApp.Core.Users.ValueObjects;
 
-namespace ProductApp.Infrastructure.DAL.Configuration;
+namespace ProductApp.Infrastructure.DAL.App.Configuration;
 
 public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {

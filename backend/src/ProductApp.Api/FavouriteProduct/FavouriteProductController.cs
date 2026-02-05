@@ -7,7 +7,7 @@ using ProductApp.Application.Favourites.Commands;
 using ProductApp.Application.Favourites.DTO;
 using ProductApp.Application.Favourites.Queries;
 
-namespace ProductApp.Api.Favourites;
+namespace ProductApp.Api.FavouriteProduct;
 
 [ApiController]
 [Authorize]

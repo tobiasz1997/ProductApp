@@ -3,6 +3,7 @@ using ProductApp.Api.User.Requests;
 using ProductApp.Application.Common.Abstraction;
 using ProductApp.Application.Common.Services;
 using ProductApp.Application.User.Commands;
+using ProductApp.Application.User.DTO;
 
 namespace ProductApp.Api.User;
 
@@ -10,22 +11,20 @@ namespace ProductApp.Api.User;
 [Route("identity")]
 public class IdentityController : ControllerBase
 {
-    private readonly ICommandHandler<SignIn> _signInCommandHandler;
-    private readonly ICommandHandler<SignUp> _signUpCommandHandler;
-    private readonly ICommandHandler<RefreshToken> _refreshTokenCommandHandler;
+    private readonly ICommandHandler<SignIn, AuthResultDto> _signInCommandHandler;
+    private readonly ICommandHandler<SignUp, AuthResultDto> _signUpCommandHandler;
+    private readonly ICommandHandler<RefreshToken, AuthResultDto> _refreshTokenCommandHandler;
     private readonly ICommandHandler<DeleteToken> _deleteTokenCommandHandler;
-    private readonly IAccessTokenStorage _tokenStorage;
     private readonly IRefreshTokenCookieService _refreshTokenCookieService;
 
     public IdentityController(
-        ICommandHandler<RefreshToken> refreshTokenCommandHandler,
-        IAccessTokenStorage tokenStorage, IRefreshTokenCookieService refreshTokenCookieService, 
+        ICommandHandler<RefreshToken, AuthResultDto> refreshTokenCommandHandler,
+        IRefreshTokenCookieService refreshTokenCookieService, 
         ICommandHandler<DeleteToken> deleteTokenCommandHandler, 
-        ICommandHandler<SignIn> signInCommandHandler, 
-        ICommandHandler<SignUp> signUpCommandHandler)
+        ICommandHandler<SignIn, AuthResultDto> signInCommandHandler, 
+        ICommandHandler<SignUp, AuthResultDto> signUpCommandHandler)
     {
         _refreshTokenCommandHandler = refreshTokenCommandHandler;
-        _tokenStorage = tokenStorage;
         _refreshTokenCookieService = refreshTokenCookieService;
         _deleteTokenCommandHandler = deleteTokenCommandHandler;
         _signInCommandHandler = signInCommandHandler;
@@ -39,8 +38,7 @@ public class IdentityController : ControllerBase
     public async Task<ActionResult<string>> RefreshToken()
     {
         var refreshToken = _refreshTokenCookieService.Get();
-        await _refreshTokenCommandHandler.HandleAsync(new RefreshToken(refreshToken));
-        var result = _tokenStorage.Get();
+        var result = await _refreshTokenCommandHandler.HandleAsync(new RefreshToken(refreshToken));
         _refreshTokenCookieService.Set(result.RefreshToken);
         return Ok(result.AccessToken);
     }
@@ -63,8 +61,7 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<string>> SignIn([FromBody] SignInRequest command)
     {
-        await _signInCommandHandler.HandleAsync(new SignIn(command.Login, command.Password));
-        var result = _tokenStorage.Get();
+        var result = await _signInCommandHandler.HandleAsync(new SignIn(command.Login, command.Password));
         _refreshTokenCookieService.Set(result.RefreshToken);
         return Ok(result.AccessToken);
     }
@@ -75,8 +72,7 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<string>> SignUp([FromBody] SignUpRequest command)
     {
-        await _signUpCommandHandler.HandleAsync(new SignUp(command.Login, command.Password));
-        var result = _tokenStorage.Get();
+        var result = await _signUpCommandHandler.HandleAsync(new SignUp(command.Login, command.Password));
         _refreshTokenCookieService.Set(result.RefreshToken);
         return Ok(result.AccessToken);
     }

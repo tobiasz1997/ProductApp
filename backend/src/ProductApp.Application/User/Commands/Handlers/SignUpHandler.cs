@@ -7,21 +7,19 @@ using ProductApp.Core.Users.ValueObjects;
 
 namespace ProductApp.Application.User.Commands.Handlers;
 
-internal sealed class SignUpHandler : ICommandHandler<SignUp>
+internal sealed class SignUpHandler : ICommandHandler<SignUp, AuthResultDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
     private readonly IClock _clock;
     private readonly IPasswordService _passwordService;
-    private readonly IAccessTokenStorage _tokenStorage;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public SignUpHandler(
         IUserRepository userRepository,
         IClock clock,
-        IPasswordService passwordService, 
-        IAccessTokenStorage tokenStorage, 
+        IPasswordService passwordService,
         IRefreshTokenService refreshTokenService, 
         IRefreshTokenRepository refreshTokenRepository, 
         IJwtService jwtService)
@@ -29,13 +27,12 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
         _userRepository = userRepository;
         _clock = clock;
         _passwordService = passwordService;
-        _tokenStorage = tokenStorage;
         _refreshTokenService = refreshTokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _jwtService = jwtService;
     }
 
-    public async Task HandleAsync(SignUp command)
+    public async Task<AuthResultDto> HandleAsync(SignUp command)
     {
         if (await _userRepository.GetByLoginAsync(command.Login) is not null)
         {
@@ -51,7 +48,7 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
         var refreshToken = _refreshTokenService.Create(user.Id);
 
         await _refreshTokenRepository.Insert(refreshToken);
-        
-        _tokenStorage.Set(new AuthResultDto() { AccessToken = accessToken, RefreshToken = refreshToken.Token});
+
+        return new AuthResultDto { AccessToken = accessToken, RefreshToken = refreshToken.Token };
     }
 }

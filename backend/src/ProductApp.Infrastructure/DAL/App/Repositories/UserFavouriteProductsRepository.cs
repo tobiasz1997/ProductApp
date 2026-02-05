@@ -3,25 +3,25 @@ using ProductApp.Core.Common.Repositories;
 using ProductApp.Core.Common.ValueObjects;
 using ProductApp.Core.ProductFavourites.Models;
 
-namespace ProductApp.Infrastructure.DAL.Repositories;
+namespace ProductApp.Infrastructure.DAL.App.Repositories;
 
 public class UserFavouriteProductsRepository : IUserFavouriteProductsRepository
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly AppDatabaseContext _appDatabaseContext;
 
-    public UserFavouriteProductsRepository(DatabaseContext databaseContext)
+    public UserFavouriteProductsRepository(AppDatabaseContext appDatabaseContext)
     {
-        _databaseContext = databaseContext;
+        _appDatabaseContext = appDatabaseContext;
     }
 
     public async Task<IEnumerable<Product>> GetByUserIdAsync(Id userId)
     {
-        var result = await _databaseContext
+        var result = await _appDatabaseContext
             .ProductFavourite
             .AsNoTracking()
             .Where(x => x.UserId == userId)
             .Join(
-                _databaseContext.Product.AsNoTracking(),
+                _appDatabaseContext.Product.AsNoTracking(),
                 favourite => favourite.ProductId,
                 product => product.Id,
                 (favourite, product) => product

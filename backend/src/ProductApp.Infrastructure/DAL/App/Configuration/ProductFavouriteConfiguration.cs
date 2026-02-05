@@ -4,7 +4,7 @@ using ProductApp.Core.Common.ValueObjects;
 using ProductApp.Core.ProductFavourites.Models;
 using ProductApp.Core.Users.Models;
 
-namespace ProductApp.Infrastructure.DAL.Configuration;
+namespace ProductApp.Infrastructure.DAL.App.Configuration;
 
 public class ProductFavouriteConfiguration : IEntityTypeConfiguration<ProductFavourite>
 {

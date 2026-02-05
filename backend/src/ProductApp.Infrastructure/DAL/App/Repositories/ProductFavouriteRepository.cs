@@ -3,30 +3,31 @@ using ProductApp.Core.Common.ValueObjects;
 using ProductApp.Core.ProductFavourites.Models;
 using ProductApp.Core.ProductFavourites.Repositories;
 
-namespace ProductApp.Infrastructure.DAL.Repositories;
+namespace ProductApp.Infrastructure.DAL.App.Repositories;
 
 public class ProductFavouriteRepository : IProductFavouriteRepository
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly AppDatabaseContext _appDatabaseContext;
 
-    public ProductFavouriteRepository(DatabaseContext databaseContext)
+    public ProductFavouriteRepository(AppDatabaseContext appDatabaseContext)
     {
-        _databaseContext = databaseContext;
+        _appDatabaseContext = appDatabaseContext;
     }
 
+
     public async Task<ProductFavourite?> GetAsync(Id userId, Id productId) =>
-        await _databaseContext.ProductFavourite.SingleOrDefaultAsync(x =>
+        await _appDatabaseContext.ProductFavourite.SingleOrDefaultAsync(x =>
             x.UserId == userId && x.ProductId == productId);
 
     public Task AddAsync(ProductFavourite productFavourite)
     {
-        _databaseContext.ProductFavourite.AddAsync(productFavourite);
+        _appDatabaseContext.ProductFavourite.AddAsync(productFavourite);
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(ProductFavourite productFavourite)
     {
-        _databaseContext.ProductFavourite.Remove(productFavourite);
+        _appDatabaseContext.ProductFavourite.Remove(productFavourite);
         return Task.CompletedTask;
     }
 }

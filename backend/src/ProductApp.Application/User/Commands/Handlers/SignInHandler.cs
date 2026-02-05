@@ -6,32 +6,29 @@ using ProductApp.Core.Users.Repositories;
 
 namespace ProductApp.Application.User.Commands.Handlers;
 
-internal sealed class SignInHandler : ICommandHandler<SignIn>
+internal sealed class SignInHandler : ICommandHandler<SignIn, AuthResultDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
     private readonly IPasswordService _passwordService;
-    private readonly IAccessTokenStorage _tokenStorage;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public SignInHandler(
         IUserRepository userRepository,
-        IPasswordService passwordService, 
-        IAccessTokenStorage tokenStorage, 
+        IPasswordService passwordService,
         IRefreshTokenService refreshTokenService, 
         IRefreshTokenRepository refreshTokenRepository, 
         IJwtService jwtService)
     {
         _userRepository = userRepository;
         _passwordService = passwordService;
-        _tokenStorage = tokenStorage;
         _refreshTokenService = refreshTokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _jwtService = jwtService;
     }
 
-    public async Task HandleAsync(SignIn command)
+    public async Task<AuthResultDto> HandleAsync(SignIn command)
     {
         var user = await _userRepository.GetByLoginAsync(command.Login);
         if (user is null)
@@ -44,10 +41,10 @@ internal sealed class SignInHandler : ICommandHandler<SignIn>
             throw new InvalidCredentialsException();
         }
 
-        await RefreshOrCreateUserToken(user);
+        return await RefreshOrCreateUserToken(user);
     }
 
-    private async Task RefreshOrCreateUserToken(Core.Users.Models.User user)
+    private async Task<AuthResultDto> RefreshOrCreateUserToken(Core.Users.Models.User user)
     {
         var accessToken = _jwtService.CreateToken(user.Id, user.Login);
         var token = await _refreshTokenRepository.GetByUserId(user.Id);
@@ -63,6 +60,6 @@ internal sealed class SignInHandler : ICommandHandler<SignIn>
             await _refreshTokenRepository.Update(token);
         }
 
-        _tokenStorage.Set(new AuthResultDto() {AccessToken = accessToken, RefreshToken = token.Token});   
+        return new AuthResultDto { AccessToken = accessToken, RefreshToken = token.Token };
     }
 }

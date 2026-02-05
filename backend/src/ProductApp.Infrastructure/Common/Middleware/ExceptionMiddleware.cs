@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using ProductApp.Core.Common.Exceptions.Abstractions;
 
-namespace ProductApp.Infrastructure.Common.Exception;
+namespace ProductApp.Infrastructure.Common.Middleware;
 
 internal sealed class ExceptionMiddleware(ILogger<ExceptionMiddleware> logger) : IMiddleware
 {

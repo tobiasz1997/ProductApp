@@ -2,21 +2,25 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ProductApp.Infrastructure.DAL;
+using ProductApp.Infrastructure.DAL.App;
 
 #nullable disable
 
-namespace ProductApp.Infrastructure.DAL.Migrations
+namespace ProductApp.Infrastructure.DAL.App.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDatabaseContext))]
+    [Migration("20260205145429_Init_App")]
+    partial class Init_App
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("app")
                 .HasAnnotation("ProductVersion", "9.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -56,7 +60,7 @@ namespace ProductApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", "app");
                 });
 
             modelBuilder.Entity("ProductApp.Core.ProductFavourites.Models.ProductFavourite", b =>
@@ -74,7 +78,7 @@ namespace ProductApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductFavourite");
+                    b.ToTable("ProductFavourite", "app");
                 });
 
             modelBuilder.Entity("ProductApp.Core.Users.Models.RefreshToken", b =>
@@ -102,7 +106,7 @@ namespace ProductApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshToken", "app");
                 });
 
             modelBuilder.Entity("ProductApp.Core.Users.Models.User", b =>
@@ -126,7 +130,7 @@ namespace ProductApp.Infrastructure.DAL.Migrations
                     b.HasIndex("Login")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("User", "app");
                 });
 
             modelBuilder.Entity("ProductApp.Core.ProductFavourites.Models.ProductFavourite", b =>

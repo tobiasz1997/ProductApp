@@ -18,9 +18,9 @@ public static class Extensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
-            .AddScoped<ICommandHandler<SignIn>, SignInHandler>()
-            .AddScoped<ICommandHandler<SignUp>, SignUpHandler>()
-            .AddScoped<ICommandHandler<RefreshToken>, RefreshTokenHandler>()
+            .AddScoped<ICommandHandler<SignIn, AuthResultDto>, SignInHandler>()
+            .AddScoped<ICommandHandler<SignUp, AuthResultDto>, SignUpHandler>()
+            .AddScoped<ICommandHandler<RefreshToken, AuthResultDto>, RefreshTokenHandler>()
             .AddScoped<ICommandHandler<DeleteToken>, DeleteTokenHandler>()
             .AddScoped<IQueryHandler<GetUser, UserDto>, GetUserHandler>()
             .AddScoped<ICommandHandler<AddFavouriteProduct, Guid>, AddFavouriteProductHandler>()

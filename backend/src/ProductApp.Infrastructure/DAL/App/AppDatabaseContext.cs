@@ -2,21 +2,22 @@
 using ProductApp.Core.ProductFavourites.Models;
 using ProductApp.Core.Users.Models;
 
-namespace ProductApp.Infrastructure.DAL;
+namespace ProductApp.Infrastructure.DAL.App;
 
-public class DatabaseContext: DbContext
+public class AppDatabaseContext: DbContext
 {
     public DbSet<User> User { get; set; }
     public DbSet<Product> Product { get; set; }
     public DbSet<ProductFavourite> ProductFavourite { get; set; }
     public DbSet<RefreshToken> RefreshToken { get; set; }
 
-    public DatabaseContext(DbContextOptions<DatabaseContext> dbContextOptions) : base(dbContextOptions)
+    public AppDatabaseContext(DbContextOptions<AppDatabaseContext> dbContextOptions) : base(dbContextOptions)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        modelBuilder.HasDefaultSchema("app");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDatabaseContext).Assembly, t => t.Namespace!.Contains("DAL.App"));
     }
 }

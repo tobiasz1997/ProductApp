@@ -1,25 +1,44 @@
-﻿using ProductApp.Infrastructure.DAL.Decorators;
+﻿using ProductApp.Infrastructure.DAL.App;
+using ProductApp.Infrastructure.DAL.Decorators;
 
 namespace ProductApp.Infrastructure.DAL;
 
 public class DatabaseUnitOfWork: IUnitOfWork
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly AppDatabaseContext _appDatabaseContext;
 
-    public DatabaseUnitOfWork(DatabaseContext dbContext)
+    public DatabaseUnitOfWork(AppDatabaseContext appDatabaseContext)
     {
-        _dbContext = dbContext;
+        _appDatabaseContext = appDatabaseContext;
     }
     
     public async Task ExecuteAsync(Func<Task> action)
     {
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        await using var transaction = await _appDatabaseContext.Database.BeginTransactionAsync();
 
         try
         {
             await action();
-            await _dbContext.SaveChangesAsync();
+            await _appDatabaseContext.SaveChangesAsync();
             await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
+    {
+        await using var transaction = await _appDatabaseContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            var result = await action();
+            await _appDatabaseContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return result;
         }
         catch (Exception)
         {

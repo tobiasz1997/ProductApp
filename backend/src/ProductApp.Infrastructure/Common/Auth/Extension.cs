@@ -26,7 +26,6 @@ internal static class Extensions
             .AddSingleton<IJwtService, JwtService>()
             .AddSingleton<IRefreshTokenCookieService, RefreshTokenCookieService>()
             .AddSingleton<IRefreshTokenService, RefreshTokenService>()
-            .AddSingleton<IAccessTokenStorage, AccessTokenStorage>()
             .AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

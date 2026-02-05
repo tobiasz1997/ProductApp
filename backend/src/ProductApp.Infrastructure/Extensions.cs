@@ -2,9 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApp.Application.Common.Services;
+using ProductApp.Infrastructure.Common.Audit;
 using ProductApp.Infrastructure.Common.Auth;
 using ProductApp.Infrastructure.Common.Cors;
-using ProductApp.Infrastructure.Common.Exception;
+using ProductApp.Infrastructure.Common.Middleware;
 using ProductApp.Infrastructure.Common.Time;
 using ProductApp.Infrastructure.DAL;
 
@@ -20,8 +21,10 @@ public static class Extensions
         var corsOptions = configuration.GetOptions<CorsOptions>(SectionName);
         
         services
+            .AddSingleton<LoggingMiddleware>()
             .AddSingleton<ExceptionMiddleware>()
             .AddPostgres(configuration)
+            .AddAuditLog()
             .AddSingleton<IClock, Clock>()
             .AddAuth(configuration)
             .AddHttpContextAccessor()
@@ -41,6 +44,7 @@ public static class Extensions
 
     public static WebApplication UseInfrastructure(this WebApplication app)
     {
+        app.UseMiddleware<LoggingMiddleware>();
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
