@@ -17,7 +17,6 @@ public class AppDatabaseContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("app");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDatabaseContext).Assembly, t => t.Namespace!.Contains("DAL.App"));
     }
 }

@@ -13,7 +13,6 @@ public class AuditDatabaseContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("audit");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuditDatabaseContext).Assembly, t => t.Namespace!.Contains("DAL.Audit"));
     }
 }

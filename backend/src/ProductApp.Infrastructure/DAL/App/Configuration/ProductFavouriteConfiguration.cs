@@ -10,6 +10,7 @@ public class ProductFavouriteConfiguration : IEntityTypeConfiguration<ProductFav
 {
     public void Configure(EntityTypeBuilder<ProductFavourite> builder)
     {
+        builder.ToTable("app_product_favourite");
         builder.HasKey(x => new { x.UserId, x.ProductId });
         builder.Property(x => x.ProductId)
             .HasConversion(x => x.Value, x => new Id(x))

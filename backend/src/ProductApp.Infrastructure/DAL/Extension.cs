@@ -20,11 +20,11 @@ internal static class Extensions
     
     public static IServiceCollection AddPostgres(this IServiceCollection service, IConfiguration configuration)
     {
-        service.Configure<PostgresOptions>(configuration.GetRequiredSection(SectionName));
-        var postgresOptions = configuration.GetOptions<PostgresOptions>(SectionName);
+        service.Configure<DatabaseOptions>(configuration.GetRequiredSection(SectionName));
+        var mariaDbOptions = configuration.GetOptions<DatabaseOptions>(SectionName);
 
-        service.AddDbContext<AppDatabaseContext>(x => x.UseNpgsql(postgresOptions.ConnectionString, y => y.MigrationsHistoryTable("__EFMigrationHistory", "app")));
-        service.AddDbContext<AuditDatabaseContext>(x => x.UseNpgsql(postgresOptions.ConnectionString, y => y.MigrationsHistoryTable("__EFMigrationHistory", "audit")));
+        service.AddDbContext<AppDatabaseContext>(x => x.UseMySql(mariaDbOptions.ConnectionString, ServerVersion.AutoDetect(mariaDbOptions.ConnectionString), y => y.MigrationsHistoryTable("__EFMigrationHistory_app")));
+        service.AddDbContext<AuditDatabaseContext>(x => x.UseMySql(mariaDbOptions.ConnectionString,  ServerVersion.AutoDetect(mariaDbOptions.ConnectionString), y => y.MigrationsHistoryTable("__EFMigrationHistory_audit")));
         service.AddScoped<IUserRepository, UserRepository>();
         service.AddScoped<IProductRepository, ProductRepository>();
         service.AddScoped<IProductFavouriteRepository, ProductFavouriteRepository>();

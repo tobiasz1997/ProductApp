@@ -10,6 +10,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 {
     public void Configure(EntityTypeBuilder<AuditLog> builder)
     {
+        builder.ToTable("audit_audit_log");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new Id(x))
@@ -21,6 +22,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         builder.Property(x => x.UserId)
             .IsRequired(false);
         builder.Property(x => x.Metadata)
+            .HasColumnType("json")
             .IsRequired(false)
             .HasConversion(x => x == null ? null : JsonSerializer.Serialize(x, (JsonSerializerOptions?)null),
                 x => x == null ? null : JsonSerializer.Deserialize<AuditLog>(x, (JsonSerializerOptions?)null));
