@@ -7,7 +7,7 @@ public sealed record Login
 {
     private const int MinLength = 5;
     private const int MaxLength = 50;
-    private static readonly Regex Regex = new("^[A-Za-z0-9._-]+$", RegexOptions.Compiled);
+    private static readonly Regex Regex = new("[ĄąĘęÓóŚsŁłŻżŹźĆćŃń]", RegexOptions.Compiled);
     
     public string Value { get; }
         

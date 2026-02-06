@@ -12,8 +12,6 @@ public class ProductRequest
     public string PhotoUrl { get; init; } = string.Empty;
     [property: Required]
     public string Title { get; init; } = string.Empty;
-    [property: Required]
-    public string Price { get; init; } = string.Empty;
-    [property: Required]
-    public string Rating { get; init; } = string.Empty;
+    public string? Price { get; init; } = string.Empty;
+    public string? Rating { get; init; } = string.Empty;
 };

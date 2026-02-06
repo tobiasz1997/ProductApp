@@ -1,0 +1,7 @@
+<app-form-input label="Login" id="login" [formField]="loginForm.login"></app-form-input>
+<app-form-input label="Password" id="password" type="password" [formField]="loginForm.password"></app-form-input>
+<div class="footer">
+  <p-button variant="outlined" (onClick)="openLoginDialog()">Back to login</p-button>
+  <p-button (onClick)="handleSubmit()">Sign up</p-button>
+</div>
+

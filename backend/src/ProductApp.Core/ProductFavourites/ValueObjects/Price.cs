@@ -2,21 +2,11 @@
 
 namespace ProductApp.Core.ProductFavourites.ValueObjects;
 
-public class Price
+public class Price(string? value)
 {
-    public string Value { get; }
-        
-    public Price(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new EmptyValueException(nameof(Price));
-        }
+    public string? Value { get; } = value;
 
-        Value = value;
-    }
+    public static implicit operator Price(string? value) => new(value);
 
-    public static implicit operator Price(string value) => new(value);
-
-    public static implicit operator string(Price value) => value.Value;
+    public static implicit operator string?(Price? value) => value?.Value;
 }

@@ -1,26 +1,37 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
-import {ProductResponse} from '../models/product-response';
+import {AmazonProductResponse} from '../models/amazon-product-response';
+import {environment} from '../../../../environments/environment';
+import {Product} from '../models/product';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductApiService {
-  private readonly _apiUrl = 'https://dummyjson.com';
-  private readonly _selectedData = 'select=id,title,category,price';
   private readonly _httpClient = inject(HttpClient);
 
-  getProducts(page: number, pageSize = 10): Observable<ProductResponse> {
-    const skip = page * pageSize;
+  getProducts(page = 1, category = 'software', type = 'BEST_SELLERS', country = 'PL'): Observable<Product[]> {
     return this._httpClient
-      .get<ProductResponse>(`${this._apiUrl}/products?limit=${pageSize}&skip=${skip}&${this._selectedData}`)
+      .get<any>(`${environment.rapidApiUrl}/best-sellers?category=${category}&type=${type}&country=${country}&page=${page}`)
       .pipe(
-        map((response: ProductResponse) => {
-          return {
-            ...response,
-            products: response.products.slice(-pageSize)
-          } as ProductResponse
+        map((res: AmazonProductResponse | null) => {
+          if (res) {
+            const sellers = res.data.best_sellers ?? [];
+            return sellers.map((seller) => {
+              return {
+                externalId: seller.asin,
+                externalUrl: seller.product_url,
+                photoUrl: seller.product_photo,
+                rating: seller.product_star_rating,
+                price: seller.product_price,
+                title: seller.product_title,
+                id: null
+              } as Product
+            })
+          } else {
+            return []
+          }
         })
       )
   }

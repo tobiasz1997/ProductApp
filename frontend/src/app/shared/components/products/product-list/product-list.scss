@@ -1,0 +1,9 @@
+.table {
+  &__empty td {
+    text-align: center;
+  }
+}
+
+:host ::ng-deep .p-dataview-content {
+  padding: 16px;
+}

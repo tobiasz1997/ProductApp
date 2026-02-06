@@ -1,0 +1,27 @@
+<div class="card">
+  <div class="card__image">
+    <img [src]="product().photoUrl" [alt]="product().title"/>
+  </div>
+  <div class="card__description">
+    <div class="card__description--title">
+      {{ product().title }}
+    </div>
+    @if (product().rating) {
+      <div class="card__description--rating">
+        <i class="pi pi-star-fill"></i><span>{{ product().rating }}</span>
+      </div>
+    }
+  </div>
+  <div class="card__info">
+    <div class="card__info--actions">
+      <app-favourite-product-button [product]="product()"></app-favourite-product-button>
+      <p-button [rounded]="true" [text]="true" severity="secondary"
+                (onClick)="navigateToProductUrl(product().externalUrl)">
+        <i class="pi pi-external-link"></i>
+      </p-button>
+    </div>
+    <div class="card__info--price">
+      {{ product().price }}
+    </div>
+  </div>
+</div>

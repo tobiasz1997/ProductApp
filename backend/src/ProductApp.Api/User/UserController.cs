@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductApp.Api.Common;
-using ProductApp.Api.User.Requests;
 using ProductApp.Application.Common.Abstraction;
-using ProductApp.Application.Common.Services;
-using ProductApp.Application.User.Commands;
 using ProductApp.Application.User.DTO;
 using ProductApp.Application.User.Queries;
 

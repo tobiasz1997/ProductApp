@@ -43,11 +43,9 @@ namespace ProductApp.Infrastructure.DAL.App.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Price")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Rating")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")

@@ -1,22 +1,10 @@
-﻿using ProductApp.Core.Common.Exceptions;
+﻿namespace ProductApp.Core.ProductFavourites.ValueObjects;
 
-namespace ProductApp.Core.ProductFavourites.ValueObjects;
-
-public class Rating
+public class Rating(string? value)
 {
-    public string Value { get; }
-        
-    public Rating(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new EmptyValueException(nameof(Rating));
-        }
-
-        Value = value;
-    }
+    public string? Value { get; } = value;
 
     public static implicit operator Rating(string value) => new(value);
 
-    public static implicit operator string(Rating value) => value.Value;
+    public static implicit operator string?(Rating? value) => value?.Value;
 }

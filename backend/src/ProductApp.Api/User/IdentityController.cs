@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProductApp.Api.Common;
 using ProductApp.Api.User.Requests;
 using ProductApp.Application.Common.Abstraction;
 using ProductApp.Application.Common.Services;
@@ -9,7 +10,7 @@ namespace ProductApp.Api.User;
 
 [ApiController]
 [Route("identity")]
-public class IdentityController : ControllerBase
+public class IdentityController : BaseApiController
 {
     private readonly ICommandHandler<SignIn, AuthResultDto> _signInCommandHandler;
     private readonly ICommandHandler<SignUp, AuthResultDto> _signUpCommandHandler;

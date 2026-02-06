@@ -11,6 +11,15 @@
     margin: 0;
   }
 
+  &__nav {
+    display: flex;
+    gap: 8px;
+
+    &--link-active {
+      font-weight: bold;
+    }
+  }
+
   &__user {
     display: flex;
     justify-content: center;

@@ -20,6 +20,15 @@ public static class Extensions
     {
         var corsOptions = configuration.GetOptions<CorsOptions>(SectionName);
         
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AngularPolicy", p => p
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials());
+        });
+        
         services
             .AddSingleton<LoggingMiddleware>()
             .AddSingleton<ExceptionMiddleware>()
@@ -29,15 +38,6 @@ public static class Extensions
             .AddAuth(configuration)
             .AddHttpContextAccessor()
             .AddEndpointsApiExplorer();
-        
-        services.AddCors(options =>
-        {
-            options.AddPolicy(PolicyName, p => p
-                .WithOrigins(corsOptions.ClientUrl)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials());
-        });
 
         return services;
     }
@@ -46,9 +46,9 @@ public static class Extensions
     {
         app.UseMiddleware<LoggingMiddleware>();
         app.UseMiddleware<ExceptionMiddleware>();
+        app.UseCors("AngularPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseCors(PolicyName);
 
         return app;
     }

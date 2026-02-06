@@ -10,7 +10,7 @@ public class Product(Id id, ExternalId externalId, Url externalUrl, Url photoUrl
     public Url ExternalUrl { get; private set; } = externalUrl;
     public Url PhotoUrl { get; private set; } = photoUrl;
     public Title Title { get; private set; } = title;
-    public Price Price { get; private set; } = price;
-    public Rating Rating { get; private set; } = rating;
+    public Price? Price { get; private set; } = price;
+    public Rating? Rating { get; private set; } = rating;
     public DateTime CreatedAt { get; private set; } = createdAt;
 }

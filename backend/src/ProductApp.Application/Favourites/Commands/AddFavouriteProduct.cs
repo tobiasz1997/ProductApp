@@ -8,6 +8,6 @@ public record AddFavouriteProduct(
     string ExternalUrl,
     string PhotoUrl,
     string Title,
-    string Price,
-    string Rating
+    string? Price,
+    string? Rating
 ) : ICommand<Guid>;

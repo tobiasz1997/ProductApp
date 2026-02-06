@@ -25,8 +25,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasConversion(x => x.Value, x => new Title(x))
             .IsRequired();
         builder.Property(x => x.Price)
-            .HasConversion(x => x.Value, x => new Price(x));
+            .HasConversion(x => x.Value, x => new Price(x))
+            .IsRequired(false);
         builder.Property(x => x.Rating)
-            .HasConversion(x => x.Value, x => new Rating(x));
+            .HasConversion(x => x.Value, x => new Rating(x))
+            .IsRequired(false);
     }
 }

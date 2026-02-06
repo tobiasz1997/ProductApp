@@ -1,60 +1,68 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, tap, throwError} from 'rxjs';
 import {LoggerService} from '../../shared/services/logger.service';
 import {FavouritesApiService} from '../api/services/favourites-api.service';
+import {Product} from '../api/models/product';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FavouritesService {
-  private readonly _favourites$ = new BehaviorSubject<Set<string>>(new Set([]));
+  private readonly _favourites$ = new BehaviorSubject<Product[]>([]);
 
-  get favourites$(): Observable<Set<string>> {
+  get favourites$(): Observable<Product[]> {
     return this._favourites$.asObservable();
   }
 
   private readonly _favouritesApiService = inject(FavouritesApiService);
   private readonly _loggerService = inject(LoggerService);
 
-  getFavourites(): Observable<string[]> {
+  getFavourites(): Observable<boolean> {
     return this._favouritesApiService
       .getFavourites()
       .pipe(
-        tap(favourites => this.setFavourites(favourites))
-      )
+        tap(favourites => this.setFavourites(favourites)),
+        map(() => true as const),
+        catchError((_: unknown) => {
+          return of(true as const);
+        }))
   }
 
-  addFavourite(productId: number): Observable<void> {
+  addFavourite(product: Product): Observable<string> {
     return this._favouritesApiService
-      .addFavourite(productId.toString())
+      .addFavourite(product)
       .pipe(
-        tap(_ => this.updateFavouritesAddFavourite(productId)),
-        tap(_ => this._loggerService.logSuccess('Successfully added to favourite.'))
+        tap((id) => this.updateFavouritesAddFavourite(id, product)),
+        tap(_ => this._loggerService.logSuccess('Successfully added to favourite.')),
+        catchError((error: unknown) => {
+          this._loggerService.logError('Failed to add to favourite.');
+          return throwError(() => error)
+        })
       )
   }
 
-  deleteFavourite(productId: number): Observable<void> {
+  deleteFavourite(productId: string): Observable<void> {
     return this._favouritesApiService
-      .deleteFavourite(productId.toString())
+      .deleteFavourite(productId)
       .pipe(
         tap(_ => this.updateFavouritesDeleteFavourite(productId)),
-        tap(_ => this._loggerService.logSuccess('Successfully deleted to favourite.'))
+        tap(_ => this._loggerService.logSuccess('Successfully deleted to favourite.')),
+        catchError((error: unknown) => {
+          this._loggerService.logError('Failed to remove favourite.');
+          return throwError(() => error)
+        })
       )
   }
 
-  private updateFavouritesAddFavourite(productId: number): void {
-    const current = new Set(this._favourites$.value);
-    current.add(productId.toString());
-    this._favourites$.next(current)
+  private updateFavouritesAddFavourite(id: string, product: Product): void {
+    this._favourites$.next([...this._favourites$.value, {...product, id}])
   }
 
-  private updateFavouritesDeleteFavourite(productId: number): void {
-    const current = new Set(this._favourites$.value);
-    current.delete(productId.toString())
-    this._favourites$.next(current)
+  private updateFavouritesDeleteFavourite(productId: string): void {
+    this._favourites$.next([...this._favourites$.value.filter((x) => x.id !== productId)])
   }
 
-  private setFavourites(value: string[]): void {
-    this._favourites$.next(new Set(value));
+  private setFavourites(value: Product[]): void {
+    this._favourites$.next(value);
   }
 }

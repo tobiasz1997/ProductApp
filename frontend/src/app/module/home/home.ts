@@ -1,56 +1,44 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {Product} from '../../core/api/models/product';
 import {ProductApiService} from '../../core/api/services/product-api.service';
-import {TableLazyLoadEvent, TableModule} from 'primeng/table';
+import {TableModule} from 'primeng/table';
 import {finalize} from 'rxjs';
-import {FavouriteButton} from './components/favourite-button/favourite-button';
-import {CurrencyPipe} from '@angular/common';
+import {ProductList} from '../../shared/components/products/product-list/product-list';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home',
   imports: [
     TableModule,
-    FavouriteButton,
-    CurrencyPipe
+    ProductList
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home {
-  public products = signal<Product[]>([]);
-  public isProductLoading = signal(false);
-
-  public page = signal(0)
-  public pageSize = signal(10);
-  public total = signal(0);
+export class Home implements OnInit {
+  products = signal<Product[]>([]);
+  loading = signal(false);
 
   private _productApiService = inject(ProductApiService);
+  private _destroyRef = inject(DestroyRef);
 
-  onLazyLoad(event: TableLazyLoadEvent): void {
-    const first = event.first ?? 0;
-    const rows = event.rows ?? this.pageSize();
-
-    this.page.set(Math.floor(first / rows))
-    this.pageSize.set(rows);
-
+  ngOnInit() {
     this.getProducts();
   }
 
   private getProducts(): void {
-    this.isProductLoading.set(true);
-    this._productApiService.getProducts(
-      this.page()
-    )
+    this.loading.set(true);
+    this._productApiService.getProducts()
       .pipe(
+        takeUntilDestroyed(this._destroyRef),
         finalize(() => {
-          this.isProductLoading.set(false)
+          this.loading.set(false)
         })
       )
       .subscribe(res => {
-        this.products.set(res.products)
-        this.total.set(res.total)
+        this.products.set(res)
       })
   }
 }

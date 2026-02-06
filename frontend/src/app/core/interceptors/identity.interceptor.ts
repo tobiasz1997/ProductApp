@@ -7,7 +7,7 @@ export const identityInterceptor: HttpInterceptorFn = (req, next) => {
   const identityService = inject(IdentityService);
 
   if (!req.url.startsWith(environment.apiUrl)) return next(req);
-  if (!req.url.includes('/user/me') && !req.url.includes('/favourites')) return next(req);
+  if (environment.publicUrlRoots.some((publicUrl) => req.url.includes(publicUrl))) return next(req);
 
   const token = identityService.accessToken;
   if (!token) return next(req);

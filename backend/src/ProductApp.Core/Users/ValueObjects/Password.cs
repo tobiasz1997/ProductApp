@@ -21,7 +21,7 @@ public sealed record Password
             case > MaxLength:
                 throw new TooLongValueException(nameof(Password), MaxLength);
             case < MinLength:
-                throw new TooLongValueException(nameof(Password), MinLength);
+                throw new TooShortValueException(nameof(Password), MinLength);
         }
 
         Value = value;
