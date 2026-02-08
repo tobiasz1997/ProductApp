@@ -2,9 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApp.Application.Common.Services;
+using ProductApp.Infrastructure.Common.Audit;
 using ProductApp.Infrastructure.Common.Auth;
 using ProductApp.Infrastructure.Common.Cors;
-using ProductApp.Infrastructure.Common.Exception;
+using ProductApp.Infrastructure.Common.Middleware;
 using ProductApp.Infrastructure.Common.Time;
 using ProductApp.Infrastructure.DAL;
 
@@ -19,32 +20,35 @@ public static class Extensions
     {
         var corsOptions = configuration.GetOptions<CorsOptions>(SectionName);
         
-        services
-            .AddSingleton<ExceptionMiddleware>()
-            .AddPostgres(configuration)
-            .AddSingleton<IClock, Clock>()
-            .AddAuth(configuration)
-            .AddHttpContextAccessor()
-            .AddEndpointsApiExplorer();
-        
         services.AddCors(options =>
         {
-            options.AddPolicy(PolicyName, p => p
-                .WithOrigins(corsOptions.ClientUrl)
+            options.AddPolicy("AngularPolicy", p => p
+                .WithOrigins("http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials());
         });
+        
+        services
+            .AddSingleton<LoggingMiddleware>()
+            .AddSingleton<ExceptionMiddleware>()
+            .AddPostgres(configuration)
+            .AddAuditLog()
+            .AddSingleton<IClock, Clock>()
+            .AddAuth(configuration)
+            .AddHttpContextAccessor()
+            .AddEndpointsApiExplorer();
 
         return services;
     }
 
     public static WebApplication UseInfrastructure(this WebApplication app)
     {
+        app.UseMiddleware<LoggingMiddleware>();
         app.UseMiddleware<ExceptionMiddleware>();
+        app.UseCors("AngularPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseCors(PolicyName);
 
         return app;
     }

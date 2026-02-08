@@ -18,3 +18,20 @@ internal sealed class UnitOfWorkCommandHandlerDecorator<TCommand> : ICommandHand
         await _unitOfWork.ExecuteAsync(() => _commandHandler.HandleAsync(command));
     }
 }
+
+internal sealed class UnitOfWorkCommandHandlerDecorator<TCommand, TResult> : ICommandHandler<TCommand, TResult> where TCommand : class, ICommand<TResult>
+{
+    private readonly ICommandHandler<TCommand, TResult> _commandHandler;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UnitOfWorkCommandHandlerDecorator(ICommandHandler<TCommand, TResult> commandHandler, IUnitOfWork unitOfWork)
+    {
+        _commandHandler = commandHandler;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<TResult> HandleAsync(TCommand command)
+    {
+        return await _unitOfWork.ExecuteAsync(() => _commandHandler.HandleAsync(command));
+    }
+}

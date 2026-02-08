@@ -2,4 +2,4 @@
 
 namespace ProductApp.Application.User.Exceptions;
 
-public sealed class AuthenticationException() : UnauthorizedException("Unauthenticated");
+public sealed class AuthenticationException() : UnauthorizedException("Unauthorized.");

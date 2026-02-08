@@ -1,0 +1,17 @@
+<div class="form__field">
+  <label [for]="id()">{{ label() }}</label>
+  <input pInputText
+         [value]="value()"
+         [id]="id()"
+         [autocomplete]="autocomplete()"
+         [type]="type()"
+         (input)="onInput($event)"
+  />
+  @if (showErrors()) {
+    <div class="form__field--errors">
+      @for (e of errors(); track $index) {
+        <div>{{ e.message }}</div>
+      }
+    </div>
+  }
+</div>

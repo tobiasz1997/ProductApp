@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ProductApp.Application.Common.Services;
 using ProductApp.Core.Users.Models;
+using ProductApp.Core.Users.ValueObjects;
 
 namespace ProductApp.Infrastructure.Common.Auth;
 
@@ -13,7 +14,7 @@ internal sealed class PasswordService : IPasswordService
         _passwordHasher = passwordHasher;
     }
 
-    public string Secure(string password) => _passwordHasher.HashPassword(default, password);
+    public string Secure(Password password) => _passwordHasher.HashPassword(default, password.Value);
 
     public bool Validate(string password, string securePassword) =>
         _passwordHasher.VerifyHashedPassword(default, securePassword, password) is PasswordVerificationResult.Success;

@@ -1,0 +1,15 @@
+.form {
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+
+    &--errors {
+      padding: 0 4px;
+      color: var(--p-inputtext-invalid-border-color);
+      font-size: 0.75rem;
+      font-weight: bolder;
+    }
+  }
+}

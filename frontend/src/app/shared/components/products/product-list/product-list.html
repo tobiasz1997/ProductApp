@@ -1,0 +1,9 @@
+<p-dataView [value]="products() ?? []" [lazy]="true" [loading]="loading()" emptyMessage="No products">
+  <ng-template #list let-products>
+    @for (product of products; track product.externalId; let last = $last) {
+      <div [style.padding-bottom]="last ? '' : '16px'">
+        <app-product-card [product]="product"></app-product-card>
+      </div>
+    }
+  </ng-template>
+</p-dataView>

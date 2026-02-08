@@ -1,7 +1,9 @@
-﻿namespace ProductApp.Application.Common.Services;
+﻿using ProductApp.Core.Users.ValueObjects;
+
+namespace ProductApp.Application.Common.Services;
 
 public interface IPasswordService
 {
-    string Secure(string password);
+    string Secure(Password password);
     bool Validate(string password, string securePassword);
 }

@@ -1,56 +1,27 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, Signal} from '@angular/core';
 import {Product} from '../../core/api/models/product';
-import {ProductApiService} from '../../core/api/services/product-api.service';
-import {TableLazyLoadEvent, TableModule} from 'primeng/table';
-import {finalize} from 'rxjs';
-import {FavouriteButton} from './components/favourite-button/favourite-button';
-import {CurrencyPipe} from '@angular/common';
+import {TableModule} from 'primeng/table';
+import {ProductList} from '../../shared/components/products/product-list/product-list';
+import {ProductsAmazonStore} from '../../core/store/products-amazon.store';
 
 @Component({
   selector: 'app-home',
   imports: [
     TableModule,
-    FavouriteButton,
-    CurrencyPipe
+    ProductList
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home {
-  public products = signal<Product[]>([]);
-  public isProductLoading = signal(false);
+export class Home implements OnInit {
+  private _productsAmazonStore = inject(ProductsAmazonStore);
 
-  public page = signal(0)
-  public pageSize = signal(10);
-  public total = signal(0);
+  products: Signal<Product[]> = this._productsAmazonStore.products;
+  loading: Signal<boolean> = this._productsAmazonStore.isLoading;
 
-  private _productApiService = inject(ProductApiService);
-
-  onLazyLoad(event: TableLazyLoadEvent): void {
-    const first = event.first ?? 0;
-    const rows = event.rows ?? this.pageSize();
-
-    this.page.set(Math.floor(first / rows))
-    this.pageSize.set(rows);
-
-    this.getProducts();
-  }
-
-  private getProducts(): void {
-    this.isProductLoading.set(true);
-    this._productApiService.getProducts(
-      this.page()
-    )
-      .pipe(
-        finalize(() => {
-          this.isProductLoading.set(false)
-        })
-      )
-      .subscribe(res => {
-        this.products.set(res.products)
-        this.total.set(res.total)
-      })
+  ngOnInit() {
+    this._productsAmazonStore.getProducts();
   }
 }

@@ -1,32 +1,6 @@
-<div>
-  <p class="form__description">Sign in or Create account
-    <span pTooltip="You can create account if login is unique"
-          tooltipPosition="bottom"
-    >
-      <i class="pi pi-info-circle"></i>
-    </span>
-  </p>
-
-  <div class="form__field">
-    <label for="login">Login</label>
-    <input pInputText [formField]="loginForm.login" id="login" autocomplete="off" type="text" />
-    @if (loginForm.login().touched() && loginForm.login().invalid()) {
-      <div class="form__field--errors">
-        {{ loginForm.login().errors()[0].message }}
-      </div>
-    }
-  </div>
-  <div class="form__field">
-    <label for="password">Email</label>
-    <input pInputText [formField]="loginForm.password" id="password" autocomplete="off" type="password" />
-    @if (loginForm.password().touched() && loginForm.password().invalid()) {
-      <div class="form__field--errors">
-        {{ loginForm.password().errors()[0].message }}
-      </div>
-    }
-  </div>
-  <div class="form__footer">
-    <p-button variant="outlined" (onClick)="closeDialog()">Close</p-button>
-    <p-button (onClick)="handleSubmit()">Login or create</p-button>
-  </div>
+<app-form-input label="Login" id="login" [formField]="loginForm.login"></app-form-input>
+<app-form-input label="Password" id="password" type="password" [formField]="loginForm.password"></app-form-input>
+<div class="footer">
+  <p-button variant="outlined" (onClick)="openRegisterDialog()">Create account</p-button>
+  <p-button (onClick)="handleSubmit()">Login</p-button>
 </div>

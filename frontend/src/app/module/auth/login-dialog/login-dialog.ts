@@ -1,21 +1,20 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, model} from '@angular/core';
 import {Button} from 'primeng/button';
 import {DynamicDialogRef} from 'primeng/dynamicdialog';
-import {Tooltip} from 'primeng/tooltip';
-import {InputText} from 'primeng/inputtext';
 import {ReactiveFormsModule} from '@angular/forms';
-import {form, FormField, required, maxLength, minLength} from '@angular/forms/signals';
+import {form, FormField, required} from '@angular/forms/signals';
 import {IdentityService} from '../../../core/services/identity.service';
-import {LoginRequest} from '../../../core/api/models/login-request';
+import {SignInRequest} from '../../../core/api/models/sign-in-request';
+import {RegisterDialogService} from '../register-dialog/register-dialog.service';
+import {FormInput} from '../../../shared/components/form/form-input/form-input';
 
 @Component({
   selector: 'app-login-dialog',
   imports: [
     Button,
-    Tooltip,
-    InputText,
     ReactiveFormsModule,
-    FormField
+    FormField,
+    FormInput
   ],
   templateUrl: './login-dialog.html',
   styleUrl: './login-dialog.scss',
@@ -23,39 +22,37 @@ import {LoginRequest} from '../../../core/api/models/login-request';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginDialog {
-  loginModel = signal<LoginRequest>({
+  loginModel = model<SignInRequest>({
     login: '',
     password: '',
   });
 
   loginForm = form(this.loginModel, (schemaPath) => {
     required(schemaPath.login, { message: 'Login is required.'});
-    minLength(schemaPath.login, 2, { message: 'Login must have at least 2 characters' });
-    maxLength(schemaPath.login, 100, { message: 'Login is too long' });
     required(schemaPath.password, { message: 'Password is required.'});
-    minLength(schemaPath.password, 2, { message: 'Password must have at least 2 characters' });
-    maxLength(schemaPath.password, 100, { message: 'Password is too long' });
   });
 
   private readonly _dynamicDialogRef = inject(DynamicDialogRef);
   private readonly _identityService = inject(IdentityService);
+  private readonly _registerDialogService = inject(RegisterDialogService)
 
-  closeDialog(): void {
+  openRegisterDialog(): void {
     this.resetForm();
-    this._dynamicDialogRef.close()
+    this._dynamicDialogRef.close();
+    this._registerDialogService.open();
   }
 
   handleSubmit(): void {
+    this.loginForm.login().markAsDirty();
+    this.loginForm.password().markAsDirty();
     if (this.loginForm().invalid()) {
       return;
     }
 
-    const formData = this.loginModel();
-
-    this._identityService.loginOrCreate(formData)
+    this._identityService.signIn(this.loginModel())
       .subscribe((isSuccess) => {
         if(isSuccess) {
-          this.closeDialog()
+          this._dynamicDialogRef.close();
         }
       })
   }

@@ -1,9 +1,11 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {catchError, Observable, throwError} from 'rxjs';
+import {catchError, map, Observable, throwError} from 'rxjs';
 import {LoggerService} from '../../../shared/services/logger.service';
 import {removeOuterQuotes} from '../../../shared/utils/string';
 import {environment} from '../../../../environments/environment';
+import {Product} from '../models/product';
+import {ProductRequest} from '../models/product-request';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +13,19 @@ import {environment} from '../../../../environments/environment';
 export class FavouritesApiService {
   private readonly _apiUrl = environment.apiUrl;
   private readonly _apiPath = 'favourites';
-
   private readonly _httpClient = inject(HttpClient);
   private readonly _loggerService = inject(LoggerService);
 
-  getFavourites(): Observable<string[]> {
+  getFavourites(): Observable<Product[]> {
     return this._httpClient
-      .get<string[]>(`${this._apiUrl}/${this._apiPath}`)
+      .get<Product[]>(`${this._apiUrl}/${this._apiPath}`)
   };
 
-  addFavourite(productId: string): Observable<void> {
+  addFavourite(product: ProductRequest): Observable<string> {
     return this._httpClient
-      .put<void>(`${this._apiUrl}/${this._apiPath}/${productId}`, null)
+      .post<string>(`${this._apiUrl}/${this._apiPath}`, product)
       .pipe(
+        map(response => response as string),
         catchError((err: HttpErrorResponse) => {
           if (err.error) {
             this._loggerService.logError(removeOuterQuotes(err.error));

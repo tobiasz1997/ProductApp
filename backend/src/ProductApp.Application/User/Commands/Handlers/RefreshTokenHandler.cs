@@ -6,24 +6,21 @@ using ProductApp.Core.Users.Repositories;
 
 namespace ProductApp.Application.User.Commands.Handlers;
 
-internal sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
+internal sealed class RefreshTokenHandler : ICommandHandler<RefreshToken, AuthResultDto>
 {
     private readonly IClock _clock;
     private readonly IJwtService _jwtService;
-    private readonly IAccessTokenStorage _tokenStorage;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IUserRepository _userRepository;
 
     public RefreshTokenHandler(
-        IAccessTokenStorage tokenStorage, 
         IRefreshTokenService refreshTokenService, 
         IRefreshTokenRepository refreshTokenRepository, 
         IClock clock,
         IJwtService jwtService, 
         IUserRepository userRepository)
     {
-        _tokenStorage = tokenStorage;
         _refreshTokenService = refreshTokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _clock = clock;
@@ -31,7 +28,7 @@ internal sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
         _userRepository = userRepository;
     }
 
-    public async Task HandleAsync(RefreshToken command)
+    public async Task<AuthResultDto> HandleAsync(RefreshToken command)
     {
         var token = await _refreshTokenRepository.GetByToken(command.Token);
 
@@ -51,6 +48,6 @@ internal sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
         token = _refreshTokenService.Refresh(token);
         await _refreshTokenRepository.Update(token);
 
-        _tokenStorage.Set(new AuthResultDto {AccessToken = accessToken, RefreshToken = token.Token});
+        return new AuthResultDto { AccessToken = accessToken, RefreshToken = token.Token };
     }
 }

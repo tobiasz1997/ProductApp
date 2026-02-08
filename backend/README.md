@@ -19,6 +19,6 @@ You can add flag *-d* to run containers in background
 
 ### Available links ***after launching*** the application
 
--  pgAdmin [http://localhost:8888](http://localhost:8888)
+-  adminer [http://localhost:8080/?server=mariadb](http://localhost:8080/?server=mariadb)
 
 ---

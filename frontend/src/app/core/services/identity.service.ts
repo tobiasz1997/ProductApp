@@ -1,35 +1,31 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, forkJoin, ignoreElements, map, Observable, of, switchMap, tap} from 'rxjs';
+import {catchError, map, Observable, of, switchMap, tap, throwError} from 'rxjs';
+import {LoggerService} from '../../shared/services/logger.service';
+import {SignUpRequest} from '../api/models/sign-up-request';
+import {IdentityApiService} from '../api/services/identity-api.service';
+import {FavouritesStore} from '../store/favourites.store';
+import {UserStore} from '../store/user.store';
 import {UserApiService} from '../api/services/user-api.service';
 import {User} from '../api/models/user';
-import {LoggerService} from '../../shared/services/logger.service';
-import {FavouritesService} from './favourites.service';
-import {LoginRequest} from '../api/models/login-request';
+import {IdentityStore} from '../store/identity.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IdentityService {
-  private readonly _accessToken$ = new BehaviorSubject<string | null>(null);
-  private readonly _user$ = new BehaviorSubject<User | null>(null);
-
-  get user$(): Observable<User | null> {
-    return this._user$.asObservable();
-  }
-
-  get accessToken(): string | null {
-    return this._accessToken$.value;
-  }
-
   private readonly _loggerService = inject(LoggerService);
   private readonly _userApiService = inject(UserApiService);
-  private readonly _favouritesService = inject(FavouritesService);
+  private readonly _identityApiService = inject(IdentityApiService);
+  private readonly _favouriteStore = inject(FavouritesStore);
+  private readonly _userStore = inject(UserStore);
+  private readonly _identityStore = inject(IdentityStore);
 
-  loginOrCreate(payload: LoginRequest): Observable<boolean> {
-    return this._userApiService
-      .loginOrCreate(payload)
+
+  signIn(payload: SignUpRequest): Observable<boolean> {
+    return this._identityApiService
+      .signIn(payload)
       .pipe(
-        tap((res) => this.setAccessToken(res)),
+        tap((token) => this._identityStore.setAccessToken(token)),
         switchMap(() => this.loadData()),
         map(() => true as const),
         catchError((_: unknown) => {
@@ -38,28 +34,24 @@ export class IdentityService {
       )
   }
 
-  loadData(): Observable<void> {
-    return forkJoin([
-      this.getUser(),
-      this._favouritesService.getFavourites()
-    ]).pipe(
-      map(() => void 0)
-    )
-  }
-
-  getUser(): Observable<User> {
-    return this._userApiService
-      .getUser()
+  signUp(payload: SignUpRequest): Observable<boolean> {
+    return this._identityApiService
+      .signUp(payload)
       .pipe(
-        tap(user => this.setUser(user))
+        tap((token) => this._identityStore.setAccessToken(token)),
+        switchMap(() => this.loadData()),
+        map(() => true as const),
+        catchError((_: unknown) => {
+          return of(false);
+        })
       )
   }
 
   logout(): Observable<boolean> {
-    return this._userApiService.logout().pipe(
+    return this._identityApiService.logout().pipe(
       switchMap(() => {
-        this.setAccessToken(null);
-        this.setUser(null);
+        this._identityStore.clearAccessToken();
+        this._userStore.clearUser();
         this._loggerService.logSuccess('Successfully logged out.');
         return of(true);
       }),
@@ -67,11 +59,26 @@ export class IdentityService {
     );
   }
 
-  setAccessToken(value: string | null): void {
-    this._accessToken$.next(value);
+  loadData(): Observable<boolean> {
+    return this.getUser()
+      .pipe(
+        tap(() => this._favouriteStore.getFavourites()),
+        map(() => true as const),
+        catchError((_: unknown) => {
+          return of(false);
+        })
+      )
   }
 
-  setUser(value: User | null): void {
-    this._user$.next(value)
+  getUser(): Observable<User> {
+    return this._userApiService
+      .getUser()
+      .pipe(
+        tap(user => this._userStore.setUser(user)),
+        catchError((error: unknown) => {
+          this._userStore.clearUser();
+          return throwError(() => error);
+        })
+      )
   }
 }

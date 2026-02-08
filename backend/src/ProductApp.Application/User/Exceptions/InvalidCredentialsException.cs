@@ -2,4 +2,4 @@
 
 namespace ProductApp.Application.User.Exceptions;
 
-public sealed class InvalidCredentialsException() : BadRequestException("Invalid credentials");
+public sealed class InvalidCredentialsException() : UnauthorizedException("Invalid credentials.");

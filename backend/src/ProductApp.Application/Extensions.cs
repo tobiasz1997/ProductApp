@@ -2,6 +2,7 @@
 using ProductApp.Application.Common.Abstraction;
 using ProductApp.Application.Favourites.Commands;
 using ProductApp.Application.Favourites.Commands.Handlers;
+using ProductApp.Application.Favourites.DTO;
 using ProductApp.Application.Favourites.Queries;
 using ProductApp.Application.Favourites.Queries.Handlers;
 using ProductApp.Application.User.Commands;
@@ -17,13 +18,14 @@ public static class Extensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
-            .AddScoped<ICommandHandler<SignInOrCreate>, SignInOrCreateHandler>()
-            .AddScoped<ICommandHandler<RefreshToken>, RefreshTokenHandler>()
+            .AddScoped<ICommandHandler<SignIn, AuthResultDto>, SignInHandler>()
+            .AddScoped<ICommandHandler<SignUp, AuthResultDto>, SignUpHandler>()
+            .AddScoped<ICommandHandler<RefreshToken, AuthResultDto>, RefreshTokenHandler>()
             .AddScoped<ICommandHandler<DeleteToken>, DeleteTokenHandler>()
             .AddScoped<IQueryHandler<GetUser, UserDto>, GetUserHandler>()
-            .AddScoped<ICommandHandler<AddFavourite>, AddFavouriteHandler>()
-            .AddScoped<ICommandHandler<DeleteFavourite>, DeleteFavouriteHandler>()
-            .AddScoped<IQueryHandler<GetFavouritesList, IEnumerable<string>>, GetFavouritesListHandler>();
+            .AddScoped<ICommandHandler<AddFavouriteProduct, Guid>, AddFavouriteProductHandler>()
+            .AddScoped<ICommandHandler<DeleteFavouriteProduct>, DeleteFavouriteProductHandler>()
+            .AddScoped<IQueryHandler<GetFavouriteProductsList, IEnumerable<ProductDto>>, GetFavouriteProductsListHandler>();
         
         // TODO: problem with Structor and .NET9, deeper check or update to .net 10 is required.
         // var applicationAssemblyCommands = typeof(ICommandHandler<>).Assembly;

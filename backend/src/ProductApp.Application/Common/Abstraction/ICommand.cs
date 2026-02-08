@@ -1,5 +1,5 @@
 ﻿namespace ProductApp.Application.Common.Abstraction;
 
-public interface ICommand
-{
-}
+public interface ICommand<TResult>;
+
+public interface ICommand;
