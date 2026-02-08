@@ -1,12 +1,14 @@
 import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
 import {inject} from '@angular/core';
 import {catchError, switchMap, throwError} from 'rxjs';
-import {IdentityService} from '../services/identity.service';
 import {environment} from '../../../environments/environment';
 import {IdentityApiService} from '../api/services/identity-api.service';
+import {UserStore} from '../store/user.store';
+import {IdentityStore} from '../store/identity.store';
 
 export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
-  const identityService = inject(IdentityService);
+  const userStore = inject(UserStore);
+  const identityStore = inject(IdentityStore);
   const identityApiService = inject(IdentityApiService);
 
   if (!req.url.startsWith(environment.apiUrl)) return next(req);
@@ -20,7 +22,7 @@ export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
 
       return identityApiService.refreshToken().pipe(
         switchMap(newToken => {
-          identityService.setAccessToken(newToken);
+          identityStore.setAccessToken(newToken);
           return next(
             req.clone({
               setHeaders: {Authorization: `Bearer ${newToken}`},
@@ -30,8 +32,8 @@ export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
         catchError(err => {
           return identityApiService.logout().pipe(
             switchMap(() => {
-              identityService.setAccessToken(null);
-              identityService.setUser(null);
+              identityStore.clearAccessToken();
+              userStore.clearUser();
               return throwError(() => err);
             })
           );

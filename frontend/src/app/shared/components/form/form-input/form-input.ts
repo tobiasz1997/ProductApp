@@ -26,7 +26,7 @@ export class FormInput implements FormValueControl<string>{
 
   showErrors = computed(() => (this.touched() || this.dirty()) && this.invalid())
 
-  onInput(event: Event) {
+  onInput(event: Event): void {
     this.value.set((event.target as HTMLInputElement).value ?? '');
   }
 }

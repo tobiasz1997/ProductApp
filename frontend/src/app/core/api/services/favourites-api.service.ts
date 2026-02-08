@@ -13,7 +13,6 @@ import {ProductRequest} from '../models/product-request';
 export class FavouritesApiService {
   private readonly _apiUrl = environment.apiUrl;
   private readonly _apiPath = 'favourites';
-
   private readonly _httpClient = inject(HttpClient);
   private readonly _loggerService = inject(LoggerService);
 

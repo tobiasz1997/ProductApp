@@ -3,9 +3,9 @@
 
   @if (user()) {
     <div class="header__nav">
-      <a [routerLink]="homeUrl" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="header__nav--link-active"
+      <a [routerLink]="AppRoutes.Home" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="header__nav--link-active"
          pButton class="p-button-text">Home</a>
-      <a [routerLink]="favouriteProductsUrl" routerLinkActive="header__nav--link-active" pButton class="p-button-text">Favourite
+      <a [routerLink]="AppRoutes.FavouriteProducts" routerLinkActive="header__nav--link-active" pButton class="p-button-text">Favourite
         Products</a>
     </div>
 

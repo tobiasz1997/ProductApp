@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, Signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {Button, ButtonDirective} from 'primeng/button';
 import {LoginDialogService} from '../../../module/auth/login-dialog/login-dialog.service';
 import {IdentityService} from '../../../core/services/identity.service';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {User} from '../../../core/api/models/user';
-import {favouriteProductsUrl, homeUrl} from '../../const/routes';
+import {UserStore} from '../../../core/store/user.store';
+import {AppRoutes} from '../../const/app-routes';
 
 @Component({
   selector: 'app-base-layout',
@@ -24,12 +25,12 @@ import {favouriteProductsUrl, homeUrl} from '../../const/routes';
 export class BaseLayout {
   private readonly _loginDialogService = inject(LoginDialogService)
   private readonly _identityService = inject(IdentityService)
+  private readonly _userStore = inject(UserStore)
   private readonly _destroyRef = inject(DestroyRef)
 
-  protected readonly favouriteProductsUrl = favouriteProductsUrl;
-  protected readonly homeUrl = homeUrl;
+  protected readonly AppRoutes = AppRoutes;
 
-  user = toSignal<User | null | undefined>(this._identityService.user$, {initialValue: null})
+  user: Signal<User | null | undefined> = this._userStore.user;
 
   login(): void {
     this._loginDialogService.open();

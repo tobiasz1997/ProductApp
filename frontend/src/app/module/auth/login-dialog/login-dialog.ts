@@ -1,10 +1,8 @@
-import {ChangeDetectionStrategy, Component, inject, model, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, model} from '@angular/core';
 import {Button} from 'primeng/button';
 import {DynamicDialogRef} from 'primeng/dynamicdialog';
-import {Tooltip} from 'primeng/tooltip';
-import {InputText} from 'primeng/inputtext';
 import {ReactiveFormsModule} from '@angular/forms';
-import {form, FormField, required, maxLength, minLength} from '@angular/forms/signals';
+import {form, FormField, required} from '@angular/forms/signals';
 import {IdentityService} from '../../../core/services/identity.service';
 import {SignInRequest} from '../../../core/api/models/sign-in-request';
 import {RegisterDialogService} from '../register-dialog/register-dialog.service';

@@ -14,7 +14,8 @@
   &__image {
     margin: auto;
     & img {
-      width: 300px;
+      max-width: 300px;
+      width: 100%;
     }
   }
 
@@ -32,20 +33,32 @@
     }
 
     &--title {
-      font-size: 1.5rem;
+      font-size: 1rem;
       font-weight: bold;
+
+      @include breakpoint($screen-md) {
+       font-size: 1.5rem;
+      }
     }
 
     &--rating {
       display: flex;
       align-items: center;
-      font-size: 1.5rem;
+      font-size: 1rem;
       font-weight: bold;
 
+      @include breakpoint($screen-md) {
+        font-size: 1.5rem;
+      }
+
       & i {
-        font-size: 24px;
+        font-size: 1rem;
         padding-right: 8px;
         color: gold;
+
+        @include breakpoint($screen-md) {
+          font-size: 1.5rem;
+        }
       }
     }
   }
@@ -63,15 +76,30 @@
     }
 
     &--price {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
+
+      @include breakpoint($screen-md) {
+        font-size: 2rem;
+      }
     }
 
     &--actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+
+      @include breakpoint($screen-md) {
+        flex-direction: row;
+      }
+
       i {
-        font-size: 30px;
+        font-size: 1.5rem;
+
+        @include breakpoint($screen-md) {
+          font-size: 2rem;
+        }
       }
     }
   }
-
 }

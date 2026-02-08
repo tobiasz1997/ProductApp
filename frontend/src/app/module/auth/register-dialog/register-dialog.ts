@@ -3,7 +3,6 @@ import {SignUpRequest} from '../../../core/api/models/sign-up-request';
 import {form, FormField, maxLength, minLength, pattern, required} from '@angular/forms/signals';
 import {DynamicDialogRef} from 'primeng/dynamicdialog';
 import {IdentityService} from '../../../core/services/identity.service';
-import {InputText} from 'primeng/inputtext';
 import {Button} from 'primeng/button';
 import {LoginDialogService} from '../login-dialog/login-dialog.service';
 import {FormInput} from '../../../shared/components/form/form-input/form-input';
