@@ -6,7 +6,13 @@ import {IdentityService} from '../../../core/services/identity.service';
 import {Button} from 'primeng/button';
 import {LoginDialogService} from '../login-dialog/login-dialog.service';
 import {FormInput} from '../../../shared/components/form/form-input/form-input';
-import {digitRegex, lowercaseLetterRegex, polishRegex, uppercaseLetterRegex} from '../../../shared/const/patterns';
+import {
+  digitRegex,
+  lowercaseLetterRegex,
+  polishCharactersRegex,
+  specialCharactersRegex,
+  uppercaseLetterRegex
+} from '../../../shared/const/patterns';
 
 @Component({
   selector: 'app-register-dialog',
@@ -32,7 +38,8 @@ export class RegisterDialog {
     pattern(schemaPath.login, lowercaseLetterRegex, { message: 'Login must have at least one lowercase letter' });
     pattern(schemaPath.login, uppercaseLetterRegex, { message: 'Login must have at least one uppercase letter' });
     pattern(schemaPath.login, digitRegex, { message: 'Login must have at least one digit' });
-    pattern(schemaPath.login, polishRegex, { message: 'Login cannot contain polish letters' });
+    pattern(schemaPath.login, polishCharactersRegex, { message: 'Login cannot contain polish letters' });
+    pattern(schemaPath.login, specialCharactersRegex, { message: 'Login cannot contain special characters' });
     required(schemaPath.password, { message: 'Password is required.'});
     minLength(schemaPath.password, 12, { message: 'Password must have at least 2 characters' });
     maxLength(schemaPath.password, 64, { message: 'Password is too long - max 64 characters' });
