@@ -7,7 +7,8 @@ public sealed record Login
 {
     private const int MinLength = 5;
     private const int MaxLength = 50;
-    private static readonly Regex Regex = new("[ĄąĘęÓóŚsŁłŻżŹźĆćŃń]", RegexOptions.Compiled);
+    private static readonly Regex PolishCharactersRegex = new("[ĄąĘęÓóŚsŁłŻżŹźĆćŃń]", RegexOptions.Compiled);
+    private static readonly Regex SpecialCharactersRegex = new("^[a-zA-Z0-9ĄąĘęÓóŚśŁłŻżŹźĆćŃń]+$", RegexOptions.Compiled);
     
     public string Value { get; }
         
@@ -23,7 +24,7 @@ public sealed record Login
             case > MaxLength:
                 throw new TooLongValueException(nameof(Login), MaxLength);
             case < MinLength:
-                throw new TooLongValueException(nameof(Login), MinLength);
+                throw new TooShortValueException(nameof(Login), MinLength);
         }
 
         if (!value.Any(char.IsUpper))
@@ -41,7 +42,12 @@ public sealed record Login
             throw new NoDigitValueException(nameof(Login));
         }
         
-        if (!Regex.IsMatch(value))
+        if (PolishCharactersRegex.IsMatch(value))
+        {
+            throw new InvalidCharValueException(value);
+        }
+        
+        if (!SpecialCharactersRegex.IsMatch(value))
         {
             throw new InvalidCharValueException(value);
         }
